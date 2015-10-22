@@ -19,4 +19,7 @@
 
     <dimen name="navigation_drawer_width">300dp</dimen>
     <dimen name="activity_movies_background_view_height">196dp</dimen>
+
+    <dimen name="item_personalizar_width">144dp</dimen>
+    <dimen name="item_personalizar_heigth">144dp</dimen>
 </resources>

@@ -4,4 +4,7 @@
     <dimen name="item_event_width">190dp</dimen>
     <dimen name="item_event_height">295dp</dimen>
 
+    <dimen name="item_personalizar_width">144dp</dimen>
+    <dimen name="item_personalizar_heigth">144dp</dimen>
+
 </resources>

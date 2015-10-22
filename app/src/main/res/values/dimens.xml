@@ -16,4 +16,6 @@
     <dimen name="item_event_width">196dp</dimen>
     <dimen name="item_event_height">248dp</dimen>
 
+    <dimen name="item_personalizar_width">96dp</dimen>
+    <dimen name="item_personalizar_heigth">96dp</dimen>
 </resources>
