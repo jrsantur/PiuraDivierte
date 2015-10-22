@@ -395,6 +395,7 @@ public class WelcomeActivity extends ActionBarActivity {
             }
         };
 
+
         public static FragmentThree newInstance(){
             FragmentThree fragmentThree = new FragmentThree();
             return fragmentThree;

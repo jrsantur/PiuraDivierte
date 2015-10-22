@@ -36,6 +36,7 @@
             android:layout_alignParentBottom="true"
             android:visibility="invisible"
             android:layout_centerHorizontal="true" />
+
     </RelativeLayout>
 
 </FrameLayout>

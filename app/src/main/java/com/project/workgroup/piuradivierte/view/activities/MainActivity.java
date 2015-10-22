@@ -39,19 +39,25 @@ import java.util.List;
 
 import javax.inject.Inject;
 
+import butterknife.ButterKnife;
+import butterknife.InjectView;
+import butterknife.Optional;
+
 public class MainActivity extends BaseActivity implements EventsView, RecyclerViewClickListener {
 
-    RecyclerView mRecycler;
+
     private EventsAdapter mEventsAdapter;
     private LoadingView mLoadingView;
 
-
+    @Optional
+    @InjectView(R.id.activity_event_recycler)           RecyclerView mRecycler;
     @Inject EventsPresenter mEventsPresenter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        ButterKnife.inject(this);
         //Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         //setSupportActionBar(toolbar);
 
