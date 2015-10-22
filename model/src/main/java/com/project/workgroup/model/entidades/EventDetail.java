@@ -10,6 +10,7 @@ public class EventDetail implements Serializable {
 
 
     private String id ;
+    private String title;
     private String descripcion;
     private String direccion;
     private String categoria_evento;
@@ -23,12 +24,21 @@ public class EventDetail implements Serializable {
     private String organizador;
 
 
+
     public String getId() {
         return id;
     }
 
     public void setId(String id) {
         this.id = id;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
     }
 
     public String getDescripcion() {

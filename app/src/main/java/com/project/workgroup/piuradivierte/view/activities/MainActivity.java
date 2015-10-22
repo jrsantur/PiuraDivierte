@@ -23,8 +23,11 @@ import com.mingle.widget.LoadingView;
 import com.project.workgroup.model.entidades.Event;
 import com.project.workgroup.model.entidades.EventsWrapper;
 import com.project.workgroup.piuradivierte.BaseActivity;
+import com.project.workgroup.piuradivierte.EventsApp;
 import com.project.workgroup.piuradivierte.R;
 import com.project.workgroup.piuradivierte.WelcomeActivity;
+import com.project.workgroup.piuradivierte.di.components.DaggerBasicEventsUsecaseComponent;
+import com.project.workgroup.piuradivierte.di.modules.BasicEventsUsecaseModule;
 import com.project.workgroup.piuradivierte.mvp.presenter.EventsPresenter;
 import com.project.workgroup.piuradivierte.mvp.views.EventsView;
 import com.project.workgroup.piuradivierte.util.PrefUtils;
@@ -34,12 +37,16 @@ import com.project.workgroup.piuradivierte.view.adapter.EventsAdapter;
 
 import java.util.List;
 
+import javax.inject.Inject;
+
 public class MainActivity extends BaseActivity implements EventsView, RecyclerViewClickListener {
 
     RecyclerView mRecycler;
     private EventsAdapter mEventsAdapter;
-    private EventsPresenter mEventsPresenter;
     private LoadingView mLoadingView;
+
+
+    @Inject EventsPresenter mEventsPresenter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,15 +64,19 @@ public class MainActivity extends BaseActivity implements EventsView, RecyclerVi
             startActivity(i);
             finish();
         }
+
+        initializeDependencyInjector();
+        inicializarRecycler();
+
+
+
         if(savedInstanceState==null){
-           // mEventsPresenter.attachView(this);
+           mEventsPresenter.attachView(this);
         }
         else{
 
         }
 
-
-        inicializarRecycler();
 
 
         /*
@@ -87,11 +98,20 @@ public class MainActivity extends BaseActivity implements EventsView, RecyclerVi
     @Override
     protected void onStart() {
         super.onStart();
-        //mEventsPresenter.start();
+        mEventsPresenter.start();
     }
     private void initializeFromParams(Bundle saveInstance){
         EventsWrapper eventsWrapper = (EventsWrapper) saveInstance.getSerializable(null);
+        mEventsPresenter.onPopularEventsRecivrd(eventsWrapper);
+    }
 
+
+    private void initializeDependencyInjector(){
+        EventsApp app = (EventsApp) getApplication();
+        DaggerBasicEventsUsecaseComponent.builder()
+                .appComponent(app.getAppComponent())
+                .basicEventsUsecaseModule(new BasicEventsUsecaseModule())
+                .build().inject(this);
     }
 
     @Override

@@ -2,9 +2,12 @@ package com.project.workgroup.piuradivierte.mvp.presenter;
 
 import com.project.workgroup.model.entidades.EventsWrapper;
 import com.project.workgroup.piuradivierte.mvp.views.EventsView;
+import com.proyect.workgroup.domain.ConfigurationUsecase;
 import com.proyect.workgroup.domain.GetEventsUsecase;
 import com.squareup.otto.Bus;
 import com.squareup.otto.Subscribe;
+
+import javax.inject.Inject;
 
 /**
  * Created by Junior on 16/10/2015.
@@ -17,6 +20,7 @@ public class EventsPresenter extends Presenter{
     private boolean isLoading = false;
     private Boolean mRegistered;
 
+    @Inject
     public EventsPresenter(GetEventsUsecase mGetEventsUsecase, Bus mBus) {
         this.mBus = mBus;
         this.mGetEventsUsecase = mGetEventsUsecase;
@@ -27,13 +31,13 @@ public class EventsPresenter extends Presenter{
     }
 
     @Subscribe
-    public void onEventsRecivrd(EventsWrapper eventsWrapper){
+    public void onPopularEventsRecivrd(EventsWrapper eventsWrapper){
         if(mEventsView.isTheListEmpety()){
-            //mEvenstView.hideLoading();
+            mEventsView.hideLoading();
             mEventsView.showEvents(eventsWrapper.getResults());
         }
         else{
-            //mEvenstView.hideActionLabel();
+            //mEventsView.hideActionLabel();
             mEventsView.appendMovies(eventsWrapper.getResults());
         }
         isLoading = false;
@@ -42,6 +46,7 @@ public class EventsPresenter extends Presenter{
 
     public void onEndListReached(){
         mGetEventsUsecase.execute();
+        //mEventsView.showLoadingLabel();
         isLoading = true;
     }
 
