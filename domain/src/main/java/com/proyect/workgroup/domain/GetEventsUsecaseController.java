@@ -30,8 +30,13 @@ public class GetEventsUsecaseController implements GetEventsUsecase {
     }
 
     @Override
+    public void unRegister() {
+
+        mUiBus.unregister(this);
+    }
+
+    @Override
     public void execute() {
         requestEvent();
-        mCurrentPage++;
     }
 }

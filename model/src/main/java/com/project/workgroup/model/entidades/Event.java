@@ -9,13 +9,37 @@ public class Event implements Serializable {
 
     private int id;
     private String title;
-    private String descripcion;
     private String fecha_inicio;
     private String hora_inicio;
     private String fecha_fin;
     private String hora_fin;
+    private String nombre_lugar;
     private String logo;
-    private String capacidad;
+    private int capacidad;
+
+    public String getNombre_lugar() {
+        return nombre_lugar;
+    }
+
+    public void setNombre_lugar(String nombre_lugar) {
+        this.nombre_lugar = nombre_lugar;
+    }
+
+    public String getLogo() {
+        return logo;
+    }
+
+    public void setLogo(String logo) {
+        this.logo = logo;
+    }
+
+    public int getCapacidad() {
+        return capacidad;
+    }
+
+    public void setCapacidad(int capacidad) {
+        this.capacidad = capacidad;
+    }
 
     public int getId() {
         return id;
@@ -31,14 +55,6 @@ public class Event implements Serializable {
 
     public void setTitle(String title) {
         this.title = title;
-    }
-
-    public String getDescripcion() {
-        return descripcion;
-    }
-
-    public void setDescripcion(String descripcion) {
-        this.descripcion = descripcion;
     }
 
     public String getFecha_inicio() {

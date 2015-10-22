@@ -9,4 +9,5 @@ public interface GetEventsUsecase extends Usecase{
 
     void requestEvent();
     void sendEventToPresenter(EventsWrapper response);
+    void unRegister ();
 }

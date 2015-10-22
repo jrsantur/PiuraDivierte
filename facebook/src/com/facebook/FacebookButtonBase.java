@@ -34,10 +34,7 @@ import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.View;
 import android.widget.Button;
-import android.util.Log;
-import com.facebook.FacebookException;
-import com.facebook.FacebookSdk;
-import com.facebook.R;
+
 import com.facebook.appevents.AppEventsLogger;
 
 /**
