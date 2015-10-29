@@ -188,5 +188,6 @@
     <orderEntry type="library" exported="" name="play-services-plus-8.1.0" level="project" />
     <orderEntry type="module" module-name="model" exported="" />
     <orderEntry type="module" module-name="domain" exported="" />
+    <orderEntry type="module" module-name="common" exported="" />
   </component>
 </module>
