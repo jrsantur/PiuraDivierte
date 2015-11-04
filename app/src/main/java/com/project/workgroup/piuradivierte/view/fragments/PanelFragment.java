@@ -1,4 +1,4 @@
-package com.project.workgroup.piuradivierte.fragments;
+package com.project.workgroup.piuradivierte.view.fragments;
 
 
 import android.os.Bundle;
@@ -6,11 +6,6 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-
-import com.facebook.FacebookActivity;
-import com.facebook.FacebookSdk;
-import com.facebook.login.widget.LoginButton;
-import com.project.workgroup.piuradivierte.R;
 
 public class PanelFragment extends Fragment {
 

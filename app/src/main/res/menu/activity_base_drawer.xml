@@ -4,7 +4,7 @@
     <group android:checkableBehavior="single">
         <item android:id="@+id/nav_camara"
             android:icon="@android:drawable/ic_menu_camera"
-            android:title="Eventos" />
+            android:title="@string/event_title" />
         <item android:id="@+id/nav_gallery"
             android:icon="@android:drawable/ic_menu_gallery"
             android:title="Mis Eventos" />

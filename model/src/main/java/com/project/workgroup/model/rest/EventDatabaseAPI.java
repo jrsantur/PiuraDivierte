@@ -13,9 +13,9 @@ import retrofit.http.Query;
  * Created by Junior on 09/10/2015.
  */
 public interface EventDatabaseAPI {
-    @GET("/event/popular")
+    @GET("/event")
     void getPopularEvents(
-            @Query("api_key") String apiKey,
+            @Query("") String apiKey,
             Callback<EventsWrapper> callback);
 
     @GET("/event/{id}")

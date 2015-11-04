@@ -11,7 +11,6 @@ public class EventsWrapper implements Serializable{
     private List<Event> results;
     private Number total_result;
 
-
     public EventsWrapper(List<Event> results){
         this.results = results;
     }

@@ -1,41 +1,32 @@
 package com.project.workgroup.piuradivierte.view.activities;
 
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.PersistableBundle;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
+import android.support.design.widget.NavigationView;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
-import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.view.animation.AnimationUtils;
-import android.widget.AbsListView;
-import android.widget.FrameLayout;
 
-import com.mingle.widget.LoadingView;
-import com.project.workgroup.model.entidades.Event;
 import com.project.workgroup.model.entidades.EventsWrapper;
-import com.project.workgroup.piuradivierte.BaseActivity;
 import com.project.workgroup.piuradivierte.EventsApp;
 import com.project.workgroup.piuradivierte.R;
 import com.project.workgroup.piuradivierte.WelcomeActivity;
 import com.project.workgroup.piuradivierte.di.components.DaggerBasicEventsUsecaseComponent;
 import com.project.workgroup.piuradivierte.di.modules.BasicEventsUsecaseModule;
 import com.project.workgroup.piuradivierte.mvp.presenter.EventsPresenter;
-import com.project.workgroup.piuradivierte.mvp.views.EventsView;
 import com.project.workgroup.piuradivierte.util.PrefUtils;
-import com.project.workgroup.piuradivierte.util.RecyclerInsetsDecoration;
 import com.project.workgroup.piuradivierte.util.RecyclerViewClickListener;
 import com.project.workgroup.piuradivierte.view.adapter.EventsAdapter;
-
-import java.util.List;
+import com.project.workgroup.piuradivierte.view.fragments.EventsFragment;
 
 import javax.inject.Inject;
 
@@ -43,27 +34,48 @@ import butterknife.ButterKnife;
 import butterknife.InjectView;
 import butterknife.Optional;
 
-public class MainActivity extends BaseActivity implements EventsView, RecyclerViewClickListener {
+public class MainActivity extends AppCompatActivity implements RecyclerViewClickListener {
 
 
     private EventsAdapter mEventsAdapter;
-    private LoadingView mLoadingView;
+
 
     @Optional
     @InjectView(R.id.activity_event_recycler)           RecyclerView mRecycler;
+    @InjectView(R.id.toolbar)                           Toolbar toolbar;
+    @InjectView(R.id.drawer_layout)                     DrawerLayout drawerLayout;
+    @InjectView(R.id.nav_view)                          NavigationView navigationView;
+
+    private String drawerTitle;
+
     @Inject EventsPresenter mEventsPresenter;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         ButterKnife.inject(this);
-        //Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        //setSupportActionBar(toolbar);
+
+
+        initializeDependencyInjector();
+
+        setToolbar();
+        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
+                this, drawerLayout, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
+        drawerLayout.setDrawerListener(toggle);
+        toggle.syncState();
+
+
+        if(navigationView!=null){
+            setupDrawerContent(navigationView);
+        }
+        drawerTitle = getResources().getString(R.string.event_title);
+
+
 
         //mEventsPresenter = new EventsPresenter();
-        mRecycler = (RecyclerView) findViewById(R.id.activity_event_recycler);
-        mLoadingView = (LoadingView)findViewById(R.id.loadView);
+
 
         if(!PrefUtils.isTosAccepted(this)){
             Intent i = new Intent(this, WelcomeActivity.class);
@@ -71,20 +83,17 @@ public class MainActivity extends BaseActivity implements EventsView, RecyclerVi
             finish();
         }
 
-        initializeDependencyInjector();
-        inicializarRecycler();
+
+        //inicializarRecycler();
 
 
 
         if(savedInstanceState==null){
-           mEventsPresenter.attachView(this);
+           //mEventsPresenter.attachView(this);
         }
         else{
 
         }
-
-
-
         /*
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
@@ -100,6 +109,48 @@ public class MainActivity extends BaseActivity implements EventsView, RecyclerVi
 
 
     }
+
+    private void setToolbar(){
+        setSupportActionBar(toolbar);
+
+    }
+
+    private void setupDrawerContent (NavigationView navigationView){
+        navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
+            @Override
+            public boolean onNavigationItemSelected(MenuItem menuItem) {
+                //marcar item seleccionado
+                menuItem.setChecked(true);
+                //crear nuevo fragmento
+                String title = menuItem.getTitle().toString();
+                selectItem(title);
+                return true;
+            }
+        });
+    }
+
+
+    private void selectItem(String title){
+        //enaviar titulo como argumento del fragmento
+        Bundle args = new Bundle();
+        Fragment fragment;
+        FragmentManager fragmentManager = getSupportFragmentManager();
+
+        if(title =="Eventos"){
+            args.putString(EventsFragment.ARG_SECTION_TITLE, title);
+            fragment = EventsFragment.newInstance(title);
+            fragment.setArguments(args);
+            fragmentManager.beginTransaction().replace(R.id.main_content,fragment).commit();
+        }
+
+
+
+        drawerLayout.closeDrawers();
+        setTitle(title);
+    }
+
+
+
 
     @Override
     protected void onStart() {
@@ -135,6 +186,10 @@ public class MainActivity extends BaseActivity implements EventsView, RecyclerVi
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
+        if(id==android.R.id.home){
+            drawerLayout.openDrawer(GravityCompat.START);
+        }
+
         if (id == R.id.action_settings) {
             return true;
         }
@@ -146,43 +201,9 @@ public class MainActivity extends BaseActivity implements EventsView, RecyclerVi
     private void inicializarRecycler(){
 
         //mRecycler.addItemDecoration(new RecyclerInsetsDecoration(this));
-        mRecycler.setOnScrollListener(recyclerScrollListener);
+        //mRecycler.setOnScrollListener(recyclerScrollListener);
     }
-    private RecyclerView.OnScrollListener recyclerScrollListener = new RecyclerView.OnScrollListener() {
-        public boolean flag;
-        @Override
-        public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
 
-            super.onScrolled(recyclerView, dx, dy);
-
-            int visibleItemCount    = mRecycler.getLayoutManager().getChildCount();
-            int totalItemCount      = mRecycler.getLayoutManager().getItemCount();
-            int pastVisibleItems    = ((GridLayoutManager) mRecycler.getLayoutManager())
-                    .findFirstVisibleItemPosition();
-
-            if((visibleItemCount + pastVisibleItems) >= totalItemCount && !mEventsPresenter.isLoading()) {
-                mEventsPresenter.onEndListReached();
-            }
-
-            // Is scrolling up
-            if (dy > 10) {
-
-                if (!flag) {
-                    showToolbar();
-                    flag = true;
-                }
-
-                // Is scrolling down
-            } else if (dy < -10) {
-
-                if (flag) {
-                    hideToolbar();
-                    flag = false;
-                }
-            }
-
-        }
-    };
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
@@ -206,43 +227,8 @@ public class MainActivity extends BaseActivity implements EventsView, RecyclerVi
 
 
     @Override
-    public Context getContext() {
-        return this;
-    }
-
-    @Override
-    public void showEvents(List<Event> eventList) {
-        mEventsAdapter = new EventsAdapter(eventList);
-        mEventsAdapter.setRecyclerlistListener(this);
-        mRecycler.setAdapter(mEventsAdapter);
-    }
-
-
-
-    @Override
-    public void showLoading() {
-        mLoadingView.animate();
-    }
-
-    @Override
-    public void hideLoading() {
-        mLoadingView.cancelLongPress();
-    }
-
-
-    @Override
-    public boolean isTheListEmpety() {
-        return (mEventsAdapter==null || mEventsAdapter.getEventList().isEmpty());
-    }
-
-    @Override
-    public void appendMovies(List<Event> eventList) {
-        mEventsAdapter.appendEvent(eventList);
-    }
-
-    @Override
     public void onClick(View v, int eventPosition , float touchedX, float touchedY) {
-        Intent i = new Intent(MainActivity.this, null);
+
 
     }
 

@@ -48,6 +48,9 @@ public class EventsAdapter extends RecyclerView.Adapter<EventViewHolder> {
         Event selectedEvent  = mEventList.get(position);
         holder.titleEvent.setText(selectedEvent.getTitle());
 
+
+
+
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
             holder.imgEvent.setTransitionName("cover" + position);
 

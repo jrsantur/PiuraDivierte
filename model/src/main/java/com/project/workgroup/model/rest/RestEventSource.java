@@ -1,5 +1,6 @@
 package com.project.workgroup.model.rest;
 
+import com.project.workgroup.common.Constants;
 import com.project.workgroup.model.entidades.EventDetail;
 import com.project.workgroup.model.entidades.EventsWrapper;
 import com.squareup.otto.Bus;
@@ -23,7 +24,7 @@ public class RestEventSource implements RestDataSources {
     public RestEventSource(Bus bus){
 
         RestAdapter movieAPIRest = new RestAdapter.Builder()
-                .setEndpoint("")
+                .setEndpoint(Constants.EVENTS_DB_HOST)
                 .setLogLevel(RestAdapter.LogLevel.HEADERS_AND_ARGS)
                 .build();
 
@@ -35,12 +36,12 @@ public class RestEventSource implements RestDataSources {
 
     @Override
     public void getEvents() {
-        eventDBApi.getPopularEvents("api_key", retrofitCallback);
+        eventDBApi.getPopularEvents(null, retrofitCallback);
     }
 
     @Override
     public void getDetailEvent(String id) {
-        eventDBApi.getEventDetail("api_key",id,  retrofitCallback);
+        eventDBApi.getEventDetail(null,id,  retrofitCallback);
     }
 
 
