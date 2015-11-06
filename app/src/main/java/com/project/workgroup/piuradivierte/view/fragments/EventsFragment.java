@@ -139,6 +139,7 @@ public class EventsFragment extends Fragment implements RecyclerViewClickListene
         EventsWrapper eventsWrapper = (EventsWrapper) savedInstanceState.getSerializable(BUNDLE_EVENTS_WRAPPER);
 
         mEventsPresenter.onPopularEventsRecivrd(eventsWrapper);
+
     }
 
 
