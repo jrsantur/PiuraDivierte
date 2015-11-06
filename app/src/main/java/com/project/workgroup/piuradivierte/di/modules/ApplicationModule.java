@@ -14,14 +14,14 @@ import dagger.Provides;
  */
 @Module
 public class ApplicationModule {
+
     private final EventsApp application;
 
 
     public ApplicationModule(EventsApp application) {
         this.application = application;
     }
-    @Provides @Singleton
-    Context providerApplicationContext(){
+    @Provides @Singleton    Context providerApplicationContext(){
         return application;
     }
     public static class EventUsecaseMocule{

@@ -4,7 +4,6 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -14,10 +13,13 @@ import android.view.ViewGroup;
 
 import com.mingle.widget.LoadingView;
 import com.project.workgroup.model.entidades.Event;
+import com.project.workgroup.model.entidades.EventsWrapper;
+import com.project.workgroup.piuradivierte.EventsApp;
 import com.project.workgroup.piuradivierte.R;
+import com.project.workgroup.piuradivierte.di.components.DaggerBasicEventsUsecaseComponent;
+import com.project.workgroup.piuradivierte.di.modules.BasicEventsUsecaseModule;
 import com.project.workgroup.piuradivierte.mvp.presenter.EventsPresenter;
 import com.project.workgroup.piuradivierte.mvp.views.EventsView;
-import com.project.workgroup.piuradivierte.util.RecyclerInsetsDecoration;
 import com.project.workgroup.piuradivierte.util.RecyclerViewClickListener;
 import com.project.workgroup.piuradivierte.view.adapter.EventsAdapter;
 
@@ -28,11 +30,11 @@ import javax.inject.Inject;
 /**
  * Created by Junior on 03/11/2015.
  */
-public class EventsFragment extends Fragment implements EventsView, RecyclerViewClickListener {
+public class EventsFragment extends Fragment implements RecyclerViewClickListener , EventsView{
 
 
     public static final String ARG_SECTION_TITLE = "section_number";
-
+    private final static String BUNDLE_EVENTS_WRAPPER = "events_wrapper";
     private LoadingView mLoadingView;
     private RecyclerView mRecycler;
     private EventsAdapter mEventsAdapter;
@@ -49,17 +51,52 @@ public class EventsFragment extends Fragment implements EventsView, RecyclerView
         return fragment;
     }
     public EventsFragment(){
-        //ButterKnife.inject(main);
+
     }
 
-    @Nullable
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        initializeDependencyInjector();
+        if (savedInstanceState == null){
+
+            mEventsPresenter.attachView(this);
+        }
+            initializeFromParams(savedInstanceState);
+
+
+
+    }
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_events, container, false);
         mRecycler = (RecyclerView) rootView.findViewById(R.id.activity_event_recycler);
         initializeRecycler();
 
+
         return rootView;
+    }
+    @Override
+    public void onStart() {
+        super.onStart();
+        mEventsPresenter.start();
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        if(mEventsAdapter!=null){
+            outState.putSerializable("", new EventsWrapper(mEventsAdapter.getEventList()));
+        }
+    }
+
+    private void initializeDependencyInjector(){
+        EventsApp app = (EventsApp) getActivity().getApplication();
+        DaggerBasicEventsUsecaseComponent.builder()
+                .appComponent(app.getAppComponent())
+                .basicEventsUsecaseModule(new BasicEventsUsecaseModule())
+                .build().inject(this);
     }
 
 
@@ -73,7 +110,6 @@ public class EventsFragment extends Fragment implements EventsView, RecyclerView
     public void hideLoading() {
         mLoadingView.cancelLongPress();
     }
-
 
     @Override
     public void showEvents(List<Event> eventList) {
@@ -95,8 +131,14 @@ public class EventsFragment extends Fragment implements EventsView, RecyclerView
 
     private void initializeRecycler() {
 
-        mRecycler.addItemDecoration(new RecyclerInsetsDecoration(getActivity().getApplicationContext()));
+        //mRecycler.addItemDecoration(new RecyclerInsetsDecoration(getContext()));
         mRecycler.setOnScrollListener(recyclerScrollListener);
+    }
+    private void initializeFromParams(Bundle savedInstanceState) {
+
+        EventsWrapper eventsWrapper = (EventsWrapper) savedInstanceState.getSerializable(BUNDLE_EVENTS_WRAPPER);
+
+        mEventsPresenter.onPopularEventsRecivrd(eventsWrapper);
     }
 
 
@@ -112,7 +154,7 @@ public class EventsFragment extends Fragment implements EventsView, RecyclerView
             int pastVisibleItems    = ((GridLayoutManager) mRecycler.getLayoutManager())
                     .findFirstVisibleItemPosition();
 
-            if((visibleItemCount + pastVisibleItems) >= totalItemCount && !mEventsPresenter.isLoading()) {
+            if((visibleItemCount + pastVisibleItems) >= totalItemCount && ! mEventsPresenter.isLoading()) {
                 mEventsPresenter.onEndListReached();
             }
 
@@ -140,5 +182,10 @@ public class EventsFragment extends Fragment implements EventsView, RecyclerView
     public void onClick(View v, int position, float x, float y) {
         Intent i = new Intent(context, null);
         startActivity(i);
+    }
+
+    @Override
+    public Context getContext() {
+        return context;
     }
 }

@@ -1,9 +1,13 @@
 package com.project.workgroup.model.rest;
 
 import com.project.workgroup.common.Constants;
+import com.project.workgroup.model.MediaDataSource;
 import com.project.workgroup.model.entidades.EventDetail;
 import com.project.workgroup.model.entidades.EventsWrapper;
 import com.squareup.otto.Bus;
+
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import retrofit.Callback;
 import retrofit.RestAdapter;
@@ -14,7 +18,7 @@ import retrofit.client.Response;
 /**
  * Created by Junior on 09/10/2015.
  */
-public class RestEventSource implements RestDataSources {
+public class RestEventSource implements MediaDataSource {
 
 
     private final EventDatabaseAPI eventDBApi;
@@ -30,13 +34,11 @@ public class RestEventSource implements RestDataSources {
 
         eventDBApi = movieAPIRest.create(EventDatabaseAPI.class);
         this.bus = bus;
-
     }
-
 
     @Override
     public void getEvents() {
-        eventDBApi.getPopularEvents(null, retrofitCallback);
+        eventDBApi.getPopularEvents("", retrofitCallback);
     }
 
     @Override
@@ -50,19 +52,20 @@ public class RestEventSource implements RestDataSources {
 
         @Override
         public void success(Object o, Response response) {
+            System.out.println("a consultar datos  ");
+            Logger.getAnonymousLogger().log(Level.WARNING, "a consultar datos...." );
 
+            if (o instanceof EventsWrapper){
+                EventsWrapper eventsApiResponse = (EventsWrapper) o ;
+                bus.post(eventsApiResponse);
+                System.out.println("uno de los elemntos es" + eventsApiResponse.getResults().get(1).getTitle());
+                Logger.getAnonymousLogger().log(Level.WARNING, "uno de los elemntos es" + eventsApiResponse.getResults().get(1).getTitle());
+            }
 
             if(o instanceof EventDetail){
                 EventDetail detailResponse = (EventDetail)o ;
                 bus.post(detailResponse);
             }
-
-            if (o instanceof EventsWrapper){
-                EventsWrapper eventsApiResponse = (EventsWrapper) o ;
-                bus.post(eventsApiResponse);
-            }
-
-
         }
 
         @Override
@@ -72,10 +75,7 @@ public class RestEventSource implements RestDataSources {
     };
 
 
-    @Override
-    public void getEventsByPage(int page) {
 
-    }
 
 
 }

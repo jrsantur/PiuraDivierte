@@ -5,6 +5,8 @@ import com.project.workgroup.model.MediaDataSource;
 import com.project.workgroup.model.entidades.EventsWrapper;
 import com.squareup.otto.Bus;
 
+import javax.inject.Inject;
+
 public class GetEventsUsecaseController implements GetEventsUsecase {
 
 
@@ -12,6 +14,7 @@ public class GetEventsUsecaseController implements GetEventsUsecase {
     private final Bus mUiBus;
     private int mCurrentPage = 1;
 
+    @Inject
     public GetEventsUsecaseController(MediaDataSource mMediaDataSource, Bus mUiBus) {
         this.mMediaDataSource = mMediaDataSource;
         this.mUiBus = mUiBus;
@@ -31,7 +34,6 @@ public class GetEventsUsecaseController implements GetEventsUsecase {
 
     @Override
     public void unRegister() {
-
         mUiBus.unregister(this);
     }
 

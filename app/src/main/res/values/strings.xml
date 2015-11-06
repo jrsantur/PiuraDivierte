@@ -46,4 +46,7 @@
             C 221.536,165.677 218.848,144.628 223.42,133.484 z
     </string>
 
+<!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+
 </resources>
