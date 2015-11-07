@@ -6,8 +6,8 @@ import com.project.workgroup.model.entidades.EventDetail;
 import com.project.workgroup.model.entidades.EventsWrapper;
 import com.squareup.otto.Bus;
 
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import retrofit.Callback;
 import retrofit.RestAdapter;
@@ -20,7 +20,7 @@ import retrofit.client.Response;
  */
 public class RestEventSource implements MediaDataSource {
 
-
+    Logger logger = LoggerFactory.getLogger(RestEventSource.class);
     private final EventDatabaseAPI eventDBApi;
     private final Bus bus;
 
@@ -38,6 +38,7 @@ public class RestEventSource implements MediaDataSource {
 
     @Override
     public void getEvents() {
+
         eventDBApi.getPopularEvents("", retrofitCallback);
     }
 
@@ -49,18 +50,16 @@ public class RestEventSource implements MediaDataSource {
 
     public Callback retrofitCallback = new Callback() {
 
-
         @Override
         public void success(Object o, Response response) {
-            System.out.println("a consultar datos  ");
-            Logger.getAnonymousLogger().log(Level.WARNING, "a consultar datos...." );
+            logger.error("Consultando");
+
 
             if (o instanceof EventsWrapper){
                 EventsWrapper eventsApiResponse = (EventsWrapper) o ;
                 bus.post(eventsApiResponse);
-                System.out.println("uno de los elemntos es" + eventsApiResponse.getResults().get(1).getTitle());
-                Logger.getAnonymousLogger().log(Level.WARNING, "uno de los elemntos es" + eventsApiResponse.getResults().get(1).getTitle());
-            }
+                logger.error("Se instancio el objeto eventoswrapper ");
+                }
 
             if(o instanceof EventDetail){
                 EventDetail detailResponse = (EventDetail)o ;
@@ -71,6 +70,7 @@ public class RestEventSource implements MediaDataSource {
         @Override
         public void failure(RetrofitError error) {
             System.out.println("[DEBUG] RestMovieSource failure - " + error.getMessage());
+            logger.error("Fallo de conexion");
         }
     };
 
