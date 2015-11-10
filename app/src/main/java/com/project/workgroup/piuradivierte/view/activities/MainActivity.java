@@ -14,11 +14,18 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import com.project.workgroup.model.entidades.EventsWrapper;
+import com.project.workgroup.piuradivierte.EventsApp;
 import com.project.workgroup.piuradivierte.R;
 import com.project.workgroup.piuradivierte.WelcomeActivity;
+import com.project.workgroup.piuradivierte.di.components.DaggerBasicEventsUsecaseComponent;
+import com.project.workgroup.piuradivierte.di.modules.BasicEventsUsecaseModule;
+import com.project.workgroup.piuradivierte.mvp.presenter.EventsPresenter;
 import com.project.workgroup.piuradivierte.util.PrefUtils;
 import com.project.workgroup.piuradivierte.view.fragments.EventsFragment;
 import com.project.workgroup.piuradivierte.view.fragments.MisEventosFragment;
+
+import javax.inject.Inject;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
@@ -29,13 +36,15 @@ public class MainActivity extends AppCompatActivity {
     @InjectView(R.id.drawer_layout)                     DrawerLayout drawerLayout;
     @InjectView(R.id.nav_view)                          NavigationView navigationView;
     private String drawerTitle;
+    @Inject public static EventsPresenter mEventsPresenter;
+    private final static String BUNDLE_EVENTS_WRAPPER = "events_wrapper";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         ButterKnife.inject(this);
-
+        initializeDependencyInjector();
 
         setToolbar();
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
@@ -48,6 +57,12 @@ public class MainActivity extends AppCompatActivity {
         }
         drawerTitle = getResources().getString(R.string.event_title);
 
+        if(savedInstanceState==null){
+
+        }else {
+            //initializeFromParams(savedInstanceState);
+        }
+
 
         if(!PrefUtils.isTosAccepted(this)){
             Intent i = new Intent(this, WelcomeActivity.class);
@@ -59,6 +74,15 @@ public class MainActivity extends AppCompatActivity {
     private void setToolbar(){
         setSupportActionBar(toolbar);
 
+    }
+    private void initializeDependencyInjector(){
+
+        Log.e("initializeDependency", " se inicio initializeDependency");
+        EventsApp app = (EventsApp) getApplication();
+        DaggerBasicEventsUsecaseComponent.builder()
+                .appComponent(app.getAppComponent())
+                .basicEventsUsecaseModule(new BasicEventsUsecaseModule())
+                .build().inject(this);
     }
 
     private void setupDrawerContent (NavigationView navigationView){
@@ -89,13 +113,14 @@ public class MainActivity extends AppCompatActivity {
             fragment = EventsFragment.newInstance(title);
             fragment.setArguments(args);
             fragmentManager.beginTransaction().replace(R.id.main_content,fragment).commit();
+            Log.e("Fragment","Eventos");
         }
         if(title.equals("Mis Eventos")){
             args.putString(MisEventosFragment.ARG_SECTION_TITLE, title);
             fragment = MisEventosFragment.newInstance(title);
             fragment.setArguments(args);
             fragmentManager.beginTransaction().replace(R.id.main_content,fragment).commit();
-
+            Log.e("Fragment", "Mis Eventos");
         }
 
         drawerLayout.closeDrawers();
@@ -127,6 +152,9 @@ public class MainActivity extends AppCompatActivity {
         }
         return super.onOptionsItemSelected(item);
     }
+
+
+
 
 
 }

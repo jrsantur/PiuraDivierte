@@ -26,7 +26,6 @@ public class RestEventSource implements MediaDataSource {
 
 
     public RestEventSource(Bus bus){
-
         RestAdapter movieAPIRest = new RestAdapter.Builder()
                 .setEndpoint(Constants.EVENTS_DB_HOST)
                 .setLogLevel(RestAdapter.LogLevel.HEADERS_AND_ARGS)
@@ -34,12 +33,13 @@ public class RestEventSource implements MediaDataSource {
 
         eventDBApi = movieAPIRest.create(EventDatabaseAPI.class);
         this.bus = bus;
+        logger.error("se inyecto RestEventSource");
     }
 
     @Override
     public void getEvents() {
-
-        eventDBApi.getPopularEvents("", retrofitCallback);
+        eventDBApi.getPopularEvents(null, retrofitCallback);
+        logger.error("se obtibieron los eventos");
     }
 
     @Override
@@ -52,7 +52,7 @@ public class RestEventSource implements MediaDataSource {
 
         @Override
         public void success(Object o, Response response) {
-            logger.error("Consultando");
+            logger.error("Consultando al servidor ");
 
 
             if (o instanceof EventsWrapper){
@@ -73,6 +73,7 @@ public class RestEventSource implements MediaDataSource {
             logger.error("Fallo de conexion");
         }
     };
+
 
 
 

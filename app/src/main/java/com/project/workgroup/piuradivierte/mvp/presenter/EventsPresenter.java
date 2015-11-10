@@ -1,5 +1,7 @@
 package com.project.workgroup.piuradivierte.mvp.presenter;
 
+import android.util.Log;
+
 import com.project.workgroup.model.entidades.EventsWrapper;
 import com.project.workgroup.piuradivierte.mvp.views.EventsView;
 import com.proyect.workgroup.domain.ConfigurationUsecase;
@@ -20,6 +22,7 @@ public class EventsPresenter extends Presenter{
     private boolean isLoading = false;
     private Boolean mRegistered;
 
+    private static final  String  TAG = EventsPresenter.class.getName();
     @Inject
     public EventsPresenter(GetEventsUsecase mGetEventsUsecase, Bus mBus) {
         this.mBus = mBus;
@@ -56,6 +59,8 @@ public class EventsPresenter extends Presenter{
             mBus.register(this);
             mRegistered = true;
         }
+
+        Log.e(TAG, "start presenter");
 
     }
 

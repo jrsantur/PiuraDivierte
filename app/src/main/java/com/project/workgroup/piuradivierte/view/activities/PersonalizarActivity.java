@@ -9,7 +9,7 @@ import android.view.View;
 
 import com.project.workgroup.piuradivierte.R;
 
-public class PersonalizarActivity extends AppCompatActivity {
+public class PersonalizarActivity extends AppCompatActivity  {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

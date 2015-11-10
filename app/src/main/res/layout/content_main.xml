@@ -22,12 +22,13 @@
             android:layout_height="match_parent">
 
 
-
+            <!--
             <com.mingle.widget.LoadingView
                 android:id="@+id/loadView"
                 android:layout_gravity="center"
                 android:layout_width="fill_parent"
                 android:layout_height="fill_parent"/>
+                -->
 
         </FrameLayout>
 

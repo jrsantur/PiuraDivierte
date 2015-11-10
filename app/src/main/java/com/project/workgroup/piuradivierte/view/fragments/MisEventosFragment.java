@@ -12,7 +12,7 @@ import com.project.workgroup.piuradivierte.R;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class MisEventosFragment extends Fragment {
+public class MisEventosFragment extends Fragment   {
 
     public static final String ARG_SECTION_TITLE = "section_number";
 

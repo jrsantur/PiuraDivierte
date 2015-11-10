@@ -5,8 +5,10 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -21,16 +23,18 @@ import com.project.workgroup.piuradivierte.di.modules.BasicEventsUsecaseModule;
 import com.project.workgroup.piuradivierte.mvp.presenter.EventsPresenter;
 import com.project.workgroup.piuradivierte.mvp.views.EventsView;
 import com.project.workgroup.piuradivierte.util.RecyclerViewClickListener;
+import com.project.workgroup.piuradivierte.view.activities.MainActivity;
 import com.project.workgroup.piuradivierte.view.adapter.EventsAdapter;
 
 import java.util.List;
 
-import javax.inject.Inject;
+import javax.annotation.Nullable;
+
 
 /**
  * Created by Junior on 03/11/2015.
  */
-public class EventsFragment extends Fragment implements RecyclerViewClickListener , EventsView{
+public class EventsFragment extends Fragment implements RecyclerViewClickListener , EventsView {
 
 
     public static final String ARG_SECTION_TITLE = "section_number";
@@ -38,33 +42,40 @@ public class EventsFragment extends Fragment implements RecyclerViewClickListene
     private LoadingView mLoadingView;
     private RecyclerView mRecycler;
     private EventsAdapter mEventsAdapter;
-    @Inject EventsPresenter mEventsPresenter;
+    Bundle saveInstance;
+
     Context context = getContext();
     Activity main = getActivity();
 
-    public  static EventsFragment newInstance(String sectionTitle){
-        EventsFragment fragment =  new EventsFragment();
+    public static EventsFragment newInstance(String sectionTitle) {
+        EventsFragment fragment = new EventsFragment();
         Bundle args = new Bundle();
         args.getString(ARG_SECTION_TITLE, sectionTitle);
         fragment.setArguments(args);
 
         return fragment;
     }
-    public EventsFragment(){
+
+    public EventsFragment() {
 
     }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        initializeDependencyInjector();
-        if (savedInstanceState == null){
-
-            mEventsPresenter.attachView(this);
-        }
+        if (savedInstanceState != null) {
+            Log.e("onCreate", "no se adjunto vista");
+            MainActivity.mEventsPresenter.attachView(this);
+        }else{
             initializeFromParams(savedInstanceState);
 
+            Log.e("initializeFromParams", "se inicio los parametros");
+        }
 
+    }
+    @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
 
     }
 
@@ -72,33 +83,29 @@ public class EventsFragment extends Fragment implements RecyclerViewClickListene
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_events, container, false);
         mRecycler = (RecyclerView) rootView.findViewById(R.id.activity_event_recycler);
+        mLoadingView = (LoadingView) rootView.findViewById(R.id.loadView);
         initializeRecycler();
-
 
         return rootView;
     }
-    @Override
-    public void onStart() {
-        super.onStart();
-        mEventsPresenter.start();
-    }
+
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        if(mEventsAdapter!=null){
-            outState.putSerializable("", new EventsWrapper(mEventsAdapter.getEventList()));
+        Log.e("onSaveInstanceState", " estas en onSaveInstanceState");
+        if (mEventsAdapter != null) {
+            Log.e("onSaveInstanceState", " estas en onSaveInstanceState");
+            outState.putSerializable("",null);
         }
     }
 
-    private void initializeDependencyInjector(){
-        EventsApp app = (EventsApp) getActivity().getApplication();
-        DaggerBasicEventsUsecaseComponent.builder()
-                .appComponent(app.getAppComponent())
-                .basicEventsUsecaseModule(new BasicEventsUsecaseModule())
-                .build().inject(this);
+    @Override
+    public void onStart() {
+        super.onStart();
+        MainActivity.mEventsPresenter.start();
+        Log.e("onStart", "se inicio el preseter, mEventsPresenter.start() ");
     }
-
 
 
     @Override
@@ -113,6 +120,7 @@ public class EventsFragment extends Fragment implements RecyclerViewClickListene
 
     @Override
     public void showEvents(List<Event> eventList) {
+        Log.e("showEvents", "estas en showEvents");
         mEventsAdapter = new EventsAdapter(eventList);
         mEventsAdapter.setRecyclerlistListener(this);
         mRecycler.setAdapter(mEventsAdapter);
@@ -121,7 +129,7 @@ public class EventsFragment extends Fragment implements RecyclerViewClickListene
 
     @Override
     public boolean isTheListEmpety() {
-        return (mEventsAdapter==null || mEventsAdapter.getEventList().isEmpty());
+        return (mEventsAdapter == null || mEventsAdapter.getEventList().isEmpty());
     }
 
     @Override
@@ -134,29 +142,23 @@ public class EventsFragment extends Fragment implements RecyclerViewClickListene
         //mRecycler.addItemDecoration(new RecyclerInsetsDecoration(getContext()));
         mRecycler.setOnScrollListener(recyclerScrollListener);
     }
-    private void initializeFromParams(Bundle savedInstanceState) {
-
-        EventsWrapper eventsWrapper = (EventsWrapper) savedInstanceState.getSerializable(BUNDLE_EVENTS_WRAPPER);
-
-        mEventsPresenter.onPopularEventsRecivrd(eventsWrapper);
-
-    }
 
 
     private RecyclerView.OnScrollListener recyclerScrollListener = new RecyclerView.OnScrollListener() {
         public boolean flag;
+
         @Override
         public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
 
             super.onScrolled(recyclerView, dx, dy);
 
-            int visibleItemCount    = mRecycler.getLayoutManager().getChildCount();
-            int totalItemCount      = mRecycler.getLayoutManager().getItemCount();
-            int pastVisibleItems    = ((GridLayoutManager) mRecycler.getLayoutManager())
+            int visibleItemCount = mRecycler.getLayoutManager().getChildCount();
+            int totalItemCount = mRecycler.getLayoutManager().getItemCount();
+            int pastVisibleItems = ((GridLayoutManager) mRecycler.getLayoutManager())
                     .findFirstVisibleItemPosition();
 
-            if((visibleItemCount + pastVisibleItems) >= totalItemCount && ! mEventsPresenter.isLoading()) {
-                mEventsPresenter.onEndListReached();
+            if ((visibleItemCount + pastVisibleItems) >= totalItemCount && !MainActivity.mEventsPresenter.isLoading()) {
+                MainActivity.mEventsPresenter.onEndListReached();
             }
 
             // Is scrolling up
@@ -185,8 +187,21 @@ public class EventsFragment extends Fragment implements RecyclerViewClickListene
         startActivity(i);
     }
 
-    @Override
-    public Context getContext() {
-        return context;
+    private void initializeFromParams(Bundle savedInstanceState) {
+        EventsWrapper eventsWrapper = (EventsWrapper) savedInstanceState.getSerializable(BUNDLE_EVENTS_WRAPPER);
+
+        if(mEventsAdapter==null){
+            Log.e("mEventsAdapter","mEventsAdapter es nulo");
+        }
+        if(mEventsAdapter.getEventList()==null){
+            Log.e("mEventsAdapter","mEventsAdapter es nulo");
+        }
+        else {
+            Log.e("mEventsAdapter","mEventsAdapter no es nulo " +mEventsAdapter.getEventList().get(0).getTitle());
+        }
+        MainActivity.mEventsPresenter.onPopularEventsRecivrd(eventsWrapper);
+        Log.e("initializeFromParams", "Se inicio nitializeFromParams");
     }
+
+
 }

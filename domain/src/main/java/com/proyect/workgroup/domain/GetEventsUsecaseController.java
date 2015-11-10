@@ -5,11 +5,14 @@ import com.project.workgroup.model.MediaDataSource;
 import com.project.workgroup.model.entidades.EventsWrapper;
 import com.squareup.otto.Bus;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import javax.inject.Inject;
 
 public class GetEventsUsecaseController implements GetEventsUsecase {
 
-
+    private Logger logger = LoggerFactory.getLogger(GetEventsUsecaseController.class);
     private final MediaDataSource mMediaDataSource;
     private final Bus mUiBus;
     private int mCurrentPage = 1;
@@ -19,6 +22,7 @@ public class GetEventsUsecaseController implements GetEventsUsecase {
         this.mMediaDataSource = mMediaDataSource;
         this.mUiBus = mUiBus;
         mUiBus.register(this);
+        logger.error("se inyecto GetEventsUsecaseController");
     }
 
 
